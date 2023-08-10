@@ -9,8 +9,10 @@
             align-items: center;
             height: 100vh;
             margin: 0;
+            padding: 0;
             font-family: 'Raleway', sans-serif;
             background: #1f1d2e;
+            position: relative;
         }
 
         #weatherReport {
@@ -18,10 +20,19 @@
             text-align: center;
             color: #e0def4;
         }
+
+        #locationInfo {
+            position: absolute;
+            bottom: 0px;
+            left: 10px;
+            font-size: 14px;
+            color: #ccc;
+        }
     </style>
 </head>
 <body>
     <p id="weatherReport">Loading...</p>
+    <p id="locationInfo">Detecting location...</p>
 
     <script>
         function generateWeatherReport(weatherData) {
@@ -69,16 +80,68 @@
             return report;
         }
 
-        fetch("https://wttr.in/Prairie+Village,Kansas?format=%t+%h+%C+%w+%p")
-            .then(response => response.text())
-            .then(weatherOutput => {
-                const funnyReport = generateWeatherReport(weatherOutput);
-                document.getElementById("weatherReport").textContent = funnyReport;
-            })
-            .catch(error => {
-                console.error("An error occurred:", error);
-                document.getElementById("weatherReport").textContent = "Unable to fetch weather data.";
-            });
+        function updateLocationInfo(location) {
+            document.getElementById("locationInfo").textContent = `Location: ${location}`;
+        }
+
+        function fetchWeatherByLocation(location) {
+            const weatherUrl = `https://wttr.in/${encodeURIComponent(location)}?format=%t+%h+%C+%w+%p`;
+
+            fetch(weatherUrl)
+                .then(response => response.text())
+                .then(weatherOutput => {
+                    const funnyReport = generateWeatherReport(weatherOutput);
+                    document.getElementById("weatherReport").textContent = funnyReport;
+                })
+                .catch(error => {
+                    console.error("An error occurred:", error);
+                    document.getElementById("weatherReport").textContent = "Unable to fetch weather data.";
+                });
+        }
+
+        function getLocationInfoFromCoordinates(latitude, longitude) {
+            const geocodingUrl = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`;
+
+            fetch(geocodingUrl)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.display_name) {
+                        const location = data.display_name;
+                        console.log("Detected location: ", location);
+                        updateLocationInfo(location);
+                        fetchWeatherByLocation(location);
+                    } else {
+                        console.error("Could not determine location from coordinates.");
+                        document.getElementById("weatherReport").textContent = "Unable to fetch weather data.";
+                    }
+                })
+                .catch(error => {
+                    console.error("An error occurred during reverse geocoding:", error);
+                    document.getElementById("weatherReport").textContent = "Unable to fetch weather data.";
+                });
+        }
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        const latitude = position.coords.latitude;
+                        const longitude = position.coords.longitude;
+                        getLocationInfoFromCoordinates(latitude, longitude);
+                    },
+                    error => {
+                        console.error("Geolocation error:", error);
+                        document.getElementById("weatherReport").textContent = "Unable to fetch weather data.";
+                    }
+                );
+            } else {
+                console.error("Geolocation is not supported by this browser.");
+                document.getElementById("weatherReport").textContent = "Geolocation is not supported.";
+            }
+        }
+
+        window.onload = getLocation;
+
     </script>
 </body>
 </html>
