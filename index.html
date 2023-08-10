@@ -29,10 +29,12 @@
 
             let report = "Today's weather report:";
 
-            if (parseInt(temp) > 78) {
+            if (parseInt(temp) > 80) {
                 report += " It's fucking hot";
-            } else if (parseInt(temp) > 60) {
+            } else if (parseInt(temp) > 70) {
                 report += " It's fucking warm";
+            } else if (parseInt(temp) < 50) {
+                report += " It's fucking chilly";
             } else if (parseInt(temp) < 40) {
                 report += " It's fucking cold";
             } else if (condition.includes("rain") && parseFloat(rain) > 0) {
@@ -43,6 +45,8 @@
                 report += " It's fucking snowing";
             } else if (condition.includes("clear") || condition.includes("cloud")) {
                 report += " It's fucking nice";
+            } else {
+                report += " It's fucking alright";
             }
 
             if (parseInt(humidity) > 85) {
