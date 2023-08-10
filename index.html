@@ -45,8 +45,6 @@
                 report += " It's fucking snowing";
             } else if (condition.includes("clear") || condition.includes("cloud")) {
                 report += " It's fucking nice";
-            } else {
-                report += " It's fucking alright";
             }
 
             if (parseInt(humidity) > 85) {
@@ -61,6 +59,7 @@
                 report += " and it's fucking rainy";
                 if (parseFloat(rain) > .8) {
                     report += " as fuck";
+                }
             }
 
             return report;
