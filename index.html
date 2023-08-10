@@ -54,7 +54,9 @@
             }
 
             if (parseFloat(rain) > 0) {
-                report += ` and there's fucking ${rain} inches of rain`;
+                report += " and it's fucking rainy";
+                if (parseFloat(rain) > .8) {
+                    report += " as fuck";
             }
 
             return report;
