@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather report</title>
+        <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Raleway', sans-serif;
+            background: #1f1d2e;
+        }
+
+        #weatherReport {
+            font-size: 24px;
+            text-align: center;
+            color: #e0def4;
+        }
+    </style>
+</head>
+<body>
+    <p id="weatherReport">Loading...</p>
+
+    <script>
+        function generateWeatherReport(weatherData) {
+            const [temp, humidity, condition, windSpeed, rain] = weatherData.split(" ");
+
+            let report = "Today's weather report:";
+
+            if (parseInt(temp) > 78) {
+                report += " It's fucking hot";
+            } else if (parseInt(temp) > 60) {
+                report += " It's fucking warm";
+            } else if (parseInt(temp) < 40) {
+                report += " It's fucking cold";
+            } else if (condition.includes("rain") && parseFloat(rain) > 0) {
+                report += " It's fucking raining";
+            } else if (condition.includes("showers") && parseFloat(rain) > 0) {
+                report += " It's fucking sprinkling";
+            } else if (condition.includes("snow")) {
+                report += " It's fucking snowing";
+            } else if (condition.includes("clear") || condition.includes("cloud")) {
+                report += " It's fucking nice";
+            }
+
+            if (parseInt(humidity) > 85) {
+                report += " and it's fucking humid";
+            }
+
+            if (parseInt(windSpeed) > 12) {
+                report += " and it's fucking windy";
+            }
+
+            if (parseFloat(rain) > 0) {
+                report += ` and there's fucking ${rain} inches of rain`;
+            }
+
+            return report;
+        }
+
+        fetch("https://wttr.in/Prairie+Village,Kansas?format=%t+%h+%C+%w+%p")
+            .then(response => response.text())
+            .then(weatherOutput => {
+                const funnyReport = generateWeatherReport(weatherOutput);
+                document.getElementById("weatherReport").textContent = funnyReport;
+            })
+            .catch(error => {
+                console.error("An error occurred:", error);
+                document.getElementById("weatherReport").textContent = "Unable to fetch weather data.";
+            });
+    </script>
+</body>
+</html>
