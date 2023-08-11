@@ -39,43 +39,45 @@
 
     <script>
         function generateWeatherReport(weatherData) {
-            const [temp, humidity, condition, windSpeed, rain] = weatherData.split(" ");
+            const current = weatherData.current;
+            const tempF = current.temp_f;
+            const humidity = current.humidity;
+            const windSpeedMph = current.wind_mph;
+            const precipMm = current.precip_mm;
+            const conditionText = current.condition.text;
 
-            let report = "Today's weather report:";
+            let report = "Today's weather report: It's fucking";
 
-            if (parseInt(temp) > 80) {
-                report += " It's fucking hot";
-            } else if (parseInt(temp) > 70) {
-                report += " It's fucking warm";
-            } else if (parseInt(temp) < 50) {
-                report += " It's fucking chilly";
-            } else if (parseInt(temp) < 40) {
-                report += " It's fucking cold";
+            if (tempF > 86) {
+                report += " hot";
+            } else if (tempF > 74) {
+                report += " warm";
+            } else if (tempF < 50) {
+                report += " chilly";
+            } else if (tempF < 40) {
+                report += " cold";
             } else {
-                report += " It's fucking nice";
+                report += " nice";
             }
 
-            if (parseInt(humidity) > 85) {
+            if (humidity > 80) {
                 report += " and it's fucking humid";
             }
 
-            if (parseInt(windSpeed) > 12) {
+            if (windSpeedMph > 12) {
                 report += " and it's fucking windy";
             }
 
-            if (parseFloat(rain) > 0) {
+            if (precipMm > 0) {
                 report += " and it's fucking";
 
-                if (condition.includes("snow")) {
+                if (conditionText.includes("rain")) {
+                    report += " rainy";
+                } else if (conditionText.includes("snow")) {
                     report += " snowy";
                 }
-                else if (parseFloat(rain) <= .4) {
-                    report += " sprinkly";
-                } else {
-                    report += " rainy";
-                }
 
-                if (parseFloat(rain) > .8) {
+                if (precipMm > .8) {
                     report += " as fuck";
                 }
             }
@@ -110,15 +112,15 @@
                 });
         }
 
-        function fetchWeatherByLocation(city, state) {
-            const location = `${city}, ${state}`;
-            const weatherUrl = `https://wttr.in/${encodeURIComponent(location)}?format=%t+%h+%C+%w+%p`;
+        function fetchWeatherByLocation(latitude, longitude) {
+            const apiKey = "1e69b7049ecd4b14974140515231108";
+            const weatherUrl = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${latitude},${longitude}&aqi=no`;
 
             fetch(weatherUrl)
-                .then(response => response.text())
-                .then(weatherOutput => {
-                    console.log(weatherOutput);
-                    const funnyReport = generateWeatherReport(weatherOutput);
+                .then(response => response.json())
+                .then(weatherData => {
+                    console.log(weatherData.current);
+                    const funnyReport = generateWeatherReport(weatherData);
                     document.getElementById("weatherReport").textContent = funnyReport;
                 })
                 .catch(error => {
@@ -133,7 +135,9 @@
                     position => {
                         const latitude = position.coords.latitude;
                         const longitude = position.coords.longitude;
-                        getLocationInfoFromCoordinates(latitude, longitude);
+
+                        fetchWeatherByLocation(latitude, longitude);
+                        updateLocationInfo(`Latitude: ${latitude}, Longitude: ${longitude}`);
                     },
                     error => {
                         console.error("Geolocation error:", error);
