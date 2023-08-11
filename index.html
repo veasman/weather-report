@@ -46,7 +46,6 @@
             const windSpeedMph = current.wind_mph;
             const precipMm = current.precip_mm;
             const conditionText = current.condition.text;
-            const cloud = current.cloud;
 
             let report = "Today's weather report: It's fucking";
 
@@ -82,6 +81,8 @@
                 if (precipMm > .8) {
                     report += " as fuck";
                 }
+            } else {
+                report += " and it's fucking " + conditionText.toLowerCase();
             }
 
             return report;
