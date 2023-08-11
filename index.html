@@ -2,7 +2,8 @@
 <html>
 <head>
     <title>Weather report</title>
-        <style>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <style>
         body {
             display: flex;
             justify-content: center;
@@ -45,12 +46,13 @@
             const windSpeedMph = current.wind_mph;
             const precipMm = current.precip_mm;
             const conditionText = current.condition.text;
+            const cloud = current.cloud;
 
             let report = "Today's weather report: It's fucking";
 
-            if (tempF > 86) {
+            if (tempF > 85) {
                 report += " hot";
-            } else if (tempF > 74) {
+            } else if (tempF > 75) {
                 report += " warm";
             } else if (tempF < 50) {
                 report += " chilly";
@@ -60,11 +62,11 @@
                 report += " nice";
             }
 
-            if (humidity > 80) {
+            if (humidity > 82) {
                 report += " and it's fucking humid";
             }
 
-            if (windSpeedMph > 12) {
+            if (windSpeedMph > 15) {
                 report += " and it's fucking windy";
             }
 
@@ -87,29 +89,6 @@
 
         function updateLocationInfo(location) {
             document.getElementById("locationInfo").textContent = `Location: ${location}`;
-        }
-
-        function getLocationInfoFromCoordinates(latitude, longitude) {
-            const geocodingUrl = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`;
-
-            fetch(geocodingUrl)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.address) {
-                        const city = data.address.city || data.address.town || data.address.village || '';
-                        const state = data.address.state || '';
-                        const location = `${city}, ${state}`;
-                        updateLocationInfo(location);
-                        fetchWeatherByLocation(city, state);
-                    } else {
-                        console.error("Could not determine location from coordinates.");
-                        document.getElementById("weatherReport").textContent = "Unable to fetch weather data.";
-                    }
-                })
-                .catch(error => {
-                    console.error("An error occurred during reverse geocoding:", error);
-                    document.getElementById("weatherReport").textContent = "Unable to fetch weather data.";
-                });
         }
 
         function fetchWeatherByLocation(latitude, longitude) {
