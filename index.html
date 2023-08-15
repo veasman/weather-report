@@ -14,19 +14,28 @@
             font-family: 'Raleway', sans-serif;
             background: #1f1d2e;
             color: #e0def4;
+            font-size: 14px;
             position: relative;
         }
 
         #weatherReport {
-            font-size: 60px;
-            text-align: center;
+            font-size: 4vw;
+        }
+
+        @media screen and (max-width: 600px) {
+            #weatherReport {
+                font-size: 10vw;
+                white-space: normal;
+                overflow: visible;
+                line-height: 1.2;
+                text-overflow: clip;
+            }
         }
 
         #locationInfo {
             position: absolute;
             bottom: 0px;
             left: 10px;
-            font-size: 14px;
         }
     </style>
 </head>
