@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Weather report</title>
+    <title>Better weather</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <style>
         body {
@@ -19,7 +19,7 @@
         }
 
         #weatherReport {
-            font-size: 4vw;
+            font-size: 3.5vw;
         }
 
         @media screen and (max-width: 600px) {
@@ -60,6 +60,9 @@
 
             if (tempF > 85) {
                 report += " hot";
+                if (tempF > 98) {
+                    report += " as fuck";
+                }
             } else if (tempF > 75) {
                 report += " warm";
             } else if (tempF < 50) {
