@@ -94,7 +94,14 @@
                     report += " as fuck";
                 }
             } else {
-                report += " and it's fucking " + conditionText.toLowerCase();
+                let descriptorWord = "it's";
+                let lastChar = conditionText.toLowerCase().slice(-1);
+
+                if (lastChar !== "y") {
+                    descriptorWord = "there's";
+                }
+
+                report += ` and ${descriptorWord} fucking ` + conditionText.toLowerCase();
             }
 
             return report;
