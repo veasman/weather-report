@@ -94,14 +94,8 @@
                     report += " as fuck";
                 }
             } else {
-                let descriptorWord = "it's";
-                let lastChar = conditionText.toLowerCase().slice(-1);
 
-                if (lastChar !== "y") {
-                    descriptorWord = "there's";
-                }
-
-                report += ` and ${descriptorWord} fucking ` + conditionText.toLowerCase();
+                report += " and " + conditionText.toLowerCase();
             }
 
             return report;
