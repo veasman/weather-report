@@ -65,15 +65,15 @@
                 }
             } else if (tempF > 75) {
                 report += " warm";
-            } else if (tempF < 60) {
-                report += " chilly";
-            } else if (tempF < 45) {
-                report += " cold";
             } else if (tempF < 25) {
                 report += " freezing";
                 if (tempF += 18) {
                     tempF += " as fuck";
                 }
+            } else if (tempF < 45) {
+                report += " cold";
+            } else if (tempF < 60) {
+                report += " chilly";
             } else {
                 report += " nice";
             }
