@@ -79,15 +79,15 @@
             }
 
             if (humidity > 82) {
-                report += " and it's fucking humid";
+                report += " and it's humid";
             }
 
             if (windSpeedMph > 15) {
-                report += " and it's fucking windy";
+                report += " and it's windy";
             }
 
             if (precipMm > 0) {
-                report += " and it's fucking";
+                report += " and it's";
 
                 if (conditionText.includes("rain")) {
                     report += " rainy";
@@ -99,8 +99,10 @@
                     report += " as fuck";
                 }
             } else {
-
                 report += " and " + conditionText.toLowerCase();
+                if (conditionText.toLowerCase() === "mist") {
+                    report += "y";
+                }
             }
 
             return report;
