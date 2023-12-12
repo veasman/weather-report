@@ -18,8 +18,20 @@
             position: relative;
         }
 
+        .main-text {
+            display: default;
+            justify-content: center;
+            align-items: center;
+            padding: 200px;
+            text-align: center;
+        }
+
         #weatherReport {
             font-size: 3.5vw;
+        }
+
+        #fortuneText {
+            font-size: 1.5vw;
         }
 
         @media screen and (max-width: 600px) {
@@ -40,14 +52,115 @@
     </style>
 </head>
 <body>
-    <p id="weatherReport">Loading...</p>
+    <div class="main-text">
+        <p id="weatherReport">Loading...</p>
+        <p id="fortuneText">Your fortune: Loading...</p>
+    </div>
     <p id="locationInfo">Detecting location...</p>
 
     <div id="githubLink" style="position: absolute; bottom: 10px; right: 10px;">
-        <a href="https://github.com/veasman/weather-report" style="color: #ccc;">View on GitHub</a>
+        <a href="https://github.com/veasman/weather-report">View on GitHub</a>
     </div>
 
     <script>
+        const fortunes = [
+            "Your shoelaces will forever be untie-able knots.",
+            "You'll pick the slowest line at the grocery store.",
+            "You'll accidentally like your crush's old social media post while stalking them.",
+            "Your toothpaste will fall off your toothbrush onto the bathroom floor.",
+            "Your remote will be just out of reach when you need it.",
+            "You'll get shampoo in your eyes every time you shower.",
+            "Your alarm will go off at random times during the night.",
+            "Your car will get the most annoying radio station.",
+            "Your hair will frizz up into an uncontrollable mess on important days.",
+            "Your pen will run out of ink right when you need it most.",
+            "You'll get static shocks every time you touch a doorknob.",
+            "Your favorite snack will be just out of stock.",
+            "You'll get a splinter from every wooden object you touch.",
+            "You'll sit in gum every time you wear your favorite pants.",
+            "Your ice cream will melt before you finish it.",
+            "You'll wake up with bedhead that defies gravity.",
+            "You'll lose your Wi-Fi connection during crucial online meetings.",
+            "Your phone will autocorrect messages to embarrass you.",
+            "You'll be one minute late for your bus or train.",
+            "You'll forget to save before your computer crashes.",
+            "You'll have a never-ending itch in the middle of your back.",
+            "You'll step on a Lego in the dark every night.",
+            "Your favorite TV show will get canceled after a cliffhanger ending.",
+            "You'll get a seat next to the loud talker on the plane.",
+            "You'll get a flat tire during your road trip, and your spare will be flat too.",
+            "Your ice cream cone will break and fall to the ground.",
+            "You'll choose the slowest-moving checkout line.",
+            "Your favorite song will play when you're in the bathroom.",
+            "Your boss will call you in for a meeting every Friday afternoon.",
+            "You'll hit every red light when you're running late.",
+            "You'll find a used band-aid in your fast-food burger.",
+            "Your favorite shirt will shrink in the wash and become a crop top.",
+            "Your phone will fall into the toilet just before an important call.",
+            "You'll trip in public and become an overnight viral sensation.",
+            "Your ex will suddenly become super hot after you break up.",
+            "Your favorite coffee shop will close down right before you get your morning fix.",
+            "You'll spill coffee on your important work documents before a big presentation.",
+            "You'll lose your wallet just before a planned shopping spree.",
+            "Your TV will permanently be stuck on the infomercial channel.",
+            "You'll get a bad haircut right before a long-awaited date.",
+            "Your laptop will crash, erasing all your unsaved work.",
+            "You'll accidentally reply-all to an embarrassing email at work.",
+            "Your flight will be delayed every time you travel for the next year.",
+            "Your alarm won't go off on the day of your most important meeting.",
+            "You'll forget your umbrella on rainy days.",
+            "Your new shoes will give you blisters that never seem to heal.",
+            "You'll lose your keys every time you're running late.",
+            "You'll get a parking ticket every time you try to save on parking fees.",
+            "Your favorite dessert will be sold out whenever you crave it.",
+            "You'll miss every sale on items you've been saving up for.",
+            "You'll find a $50 bill under the couch cushion next to the TV remote.",
+            "Your friend will invite you to a surprise birthday party this weekend.",
+            "A rare Pokémon will appear when you open your favorite mobile game.",
+            "You'll discover a four-leaf clover in your garden at 5:00 PM.",
+            "Your favorite coffee shop will give you a free latte on your next visit.",
+            "A vintage comic book you bought for $5 will turn out to be worth $500.",
+            "You'll win a $100 gift card from a scratch-off lottery ticket.",
+            "A stray cat you feed will become your beloved new pet.",
+            "You'll receive a call at 9:00 AM with a job offer for your dream position.",
+            "Your favorite restaurant will surprise you with a free three-course meal.",
+            "You'll find the last available ticket for a concert you've been dying to attend.",
+            "Your phone will take a stunning photo of a rare double rainbow.",
+            "Your long-lost relative will contact you, and you'll inherit a vintage car.",
+            "Your lost wallet will be returned to you with all your cash intact.",
+            "A stray dog you encounter will lead you to a hidden treasure chest.",
+            "You'll win a surprise vacation package to your dream destination.",
+            "Your local bakery will have a \"buy one, get one free\" deal on your favorite pastry.",
+            "A random person will hand you a bouquet of your favorite flowers.",
+            "You'll receive a surprise scholarship to your dream college.",
+            "A psychic will accurately predict your future, bringing you peace of mind.",
+            "You'll find a rare antique watch at a garage sale for just $10.",
+            "A lost letter you wrote will be found and cherished by the recipient.",
+            "Your coffee will be made with a heart-shaped foam design.",
+            "You'll discover an old lottery ticket that's a jackpot winner.",
+            "A chance meeting will lead to a lifetime of happiness.",
+            "You'll stumble upon a hidden waterfall on a nature hike.",
+            "Your favorite dessert will be delivered to your door by a mysterious admirer.",
+            "A seemingly ordinary book will reveal a hidden treasure map.",
+            "You'll receive a surprise package filled with nostalgic childhood toys.",
+            "A \"for sale\" sign will appear on the house of your dreams.",
+            "Your favorite song will be played by a street musician on your walk.",
+            "You'll be handed the winning ticket for a charity raffle.",
+            "A stranger will gift you an antique pocket watch with a secret compartment.",
+            "Your pet will learn a new trick that astonishes everyone.",
+            "You'll find a mysterious letter with an unexpected inheritance.",
+            "A lost ring you find at the beach will be an engagement ring's missing piece.",
+            "You'll discover an unopened bottle of vintage wine in your basement.",
+            "A new friend will share their secret family recipe with you.",
+            "Your garden will yield a record-breaking-sized vegetable.",
+            "A stray kitten you rescue will bring you unexpected luck.",
+            "You'll win a surprise date with your celebrity crush.",
+            "Your favorite book will come to life as a surprise flash mob.",
+            "You'll receive an invitation to an exclusive red carpet event.",
+            "A stranger will gift you a vintage typewriter with an inspiring message.",
+            "Your online purchase will arrive with a hand-written thank-you note."
+        ];
+
         function generateWeatherReport(weatherData) {
             const current = weatherData.current;
             const tempF = current.temp_f;
@@ -58,21 +171,21 @@
 
             let report = "It's fucking";
 
-            if (tempF > 85) {
+            if (tempF >= 82) {
                 report += " hot";
-                if (tempF > 98) {
+                if (tempF >= 94) {
                     report += " as fuck";
                 }
             } else if (tempF > 75) {
                 report += " warm";
-            } else if (tempF < 25) {
+            } else if (tempF <= 32) {
                 report += " freezing";
-                if (tempF += 18) {
+                if (tempF <= 18) {
                     tempF += " as fuck";
                 }
-            } else if (tempF < 45) {
+            } else if (tempF <= 50) {
                 report += " cold";
-            } else if (tempF < 60) {
+            } else if (tempF <= 60) {
                 report += " chilly";
             } else {
                 report += " nice";
@@ -82,7 +195,7 @@
                 report += " and it's humid";
             }
 
-            if (windSpeedMph > 15) {
+            if (windSpeedMph >= 15) {
                 report += " and it's windy";
             }
 
@@ -150,7 +263,17 @@
             }
         }
 
-        window.onload = getLocation;
+        function generateAndSetFortune() {
+            const randomIndex = Math.floor(Math.random() * fortunes.length);
+            const randomFortune = fortunes[randomIndex];
+
+            document.getElementById("fortuneText").textContent = `Your fortune: ${randomFortune}`;
+        }
+
+        window.onload = function () {
+            getLocation();
+            generateAndSetFortune();
+        };
 
     </script>
 </body>
