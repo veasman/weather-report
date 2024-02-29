@@ -285,7 +285,11 @@ const UI = {
     },
     updateWeatherInfo(weather) {
         const cur = weather.current;
-        const tempSetting = localStorage.getItem('tempurature') || 'f';
+        const tempSetting = localStorage.getItem('tempurature');
+        if (tempSetting == null || tempSetting == undefined || tempSetting == "null") {
+            localStorage.setItem('tempurature', 'f');
+            tempSetting = 'f';
+        }
 
         if (tempSetting === 'f') {
             document.getElementById("temp").textContent = `${cur.temp_f}°`;

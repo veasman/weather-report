@@ -74,7 +74,6 @@ p {
         #selectionVisual {
             position: absolute;
             pointer-events: none;
-            /*background: rgba(235, 111, 146, 0.1);*/
             background: rgba(110, 106, 134, 0.2);
             top: calc(3rem - 1px);
             left: 1.25rem;
@@ -193,5 +192,54 @@ p {
     a {
         color: #e0def4;
         text-decoration: none;
+    }
+}
+
+@media (pointer:none), (pointer:coarse) {
+    #sidebar {
+        left: -80vw;
+        width: 80vw;
+        font-size: 4rem;
+    }
+
+    #sidebar .toggleButton {
+        left: calc(80vw + 1rem);
+    }
+
+    .main {
+        margin-top: 4rem;
+        margin-bottom: 15rem;
+        font-size: 4rem;
+    }
+
+    .location {
+        display: grid;
+        place-items: center;
+
+        #header {
+            font-size: 6rem;
+        }
+
+        #subHeader {
+            font-size: 3rem;
+        }
+    }
+
+    #temp {
+        font-size: 8rem;
+    }
+
+    #report {
+        font-size: 4rem;
+    }
+
+    .box {
+        padding: 2rem;
+        font-size: 3rem;
+
+        #header {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
     }
 }
