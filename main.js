@@ -180,130 +180,224 @@ const handeyQuotes = [
     "I think it should be a law that if you ever get sucked up into a tornado, whatever you can grab with your hands while you're swirling around up there, you get to keep.",
 ];
 
-function generateWeatherReport(weatherData) {
-    const current = weatherData.current;
-    const tempF = current.temp_f;
-    const humidity = current.humidity;
-    const windSpeedMph = current.wind_mph;
-    const precipMm = current.precip_mm;
-    const conditionText = current.condition.text;
+const WeatherReporter = {
+    generateReport(weatherData) {
+        const current = weatherData.current;
+        const tempF = current.temp_f;
+        const humidity = current.humidity;
+        const windSpeedMph = current.wind_mph;
+        const precipMm = current.precip_mm;
+        const conditionText = current.condition.text;
 
-    let report = "It's fucking";
+        let report = "It's fucking";
 
-    if (tempF >= 82) {
-        report += " hot";
-        if (tempF >= 94) {
-            report += " as fuck";
+        if (tempF >= 82) {
+            report += " hot";
+            if (tempF >= 94) {
+                report += " as hell";
+            }
+        } else if (tempF > 75) {
+            report += " warm";
+        } else if (tempF <= 32) {
+            report += " freezing";
+            if (tempF <= 18) {
+                report += " as hell";
+            }
+        } else if (tempF <= 50) {
+            report += " cold";
+        } else if (tempF <= 60) {
+            report += " chilly";
+        } else {
+            report += " nice";
         }
-    } else if (tempF > 75) {
-        report += " warm";
-    } else if (tempF <= 32) {
-        report += " freezing";
-        if (tempF <= 18) {
-            tempF += " as fuck";
+
+        if (humidity > 82) {
+            report += " and humid";
         }
-    } else if (tempF <= 50) {
-        report += " cold";
-    } else if (tempF <= 60) {
-        report += " chilly";
-    } else {
-        report += " nice";
+
+        if (windSpeedMph >= 15) {
+            report += " and windy";
+        }
+
+        if (precipMm > 0) {
+            report += " and";
+
+            if (conditionText.includes("rain")) {
+                report += " rainy";
+            } else if (conditionText.includes("snow")) {
+                report += " snowy";
+            }
+
+            if (precipMm > .8) {
+                report += " as hell";
+            }
+        } else {
+            report += ` and ${conditionText.toLowerCase()}`;
+            if (conditionText.toLowerCase() === "mist") {
+                report += "y";
+            }
+        }
+
+        return report;
     }
+};
 
-    if (humidity > 82) {
-        report += " and it's humid";
-    }
+const WeatherApp = {
+    apiKey: "1e69b7049ecd4b14974140515231108",
+    apiUrl(latitude, longitude) {
+        return `https://api.weatherapi.com/v1/current.json?key=${this.apiKey}&q=${latitude},${longitude}&aqi=no`;
+    },
+    async fetchWeather(latitude, longitude) {
+        const weatherUrl = this.apiUrl(latitude, longitude);
 
-    if (windSpeedMph >= 15) {
-        report += " and it's windy";
-    }
-
-    if (precipMm > 0) {
-        report += " and it's";
-
-        if (conditionText.includes("rain")) {
-            report += " rainy";
-        } else if (conditionText.includes("snow")) {
-            report += " snowy";
-        }
-
-        if (precipMm > .8) {
-            report += " as fuck";
-        }
-    } else {
-        report += " and " + conditionText.toLowerCase();
-        if (conditionText.toLowerCase() === "mist") {
-            report += "y";
-        }
-    }
-
-    return report;
-}
-
-function updateLocationInfo(location) {
-    document.getElementById("location").textContent = `${location}`;
-}
-
-function fetchWeatherByLocation(latitude, longitude) {
-    const apiKey = "1e69b7049ecd4b14974140515231108";
-    const weatherUrl = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${latitude},${longitude}&aqi=no`;
-
-    fetch(weatherUrl)
-        .then(response => response.json())
-        .then(weatherData => {
-            console.log(weatherData.current);
-            const funnyReport = generateWeatherReport(weatherData);
-            const cur = weatherData.current;
-
-            document.getElementById("temp").textContent = `${cur.temp_c}°`;
-            document.getElementById("report").textContent = funnyReport;
-            document.getElementById("feelsLike").textContent = `Feels like: ${cur.feelslike_c}°`;
-            document.getElementById("wind").textContent = `${cur.wind_mph}mph ${cur.wind_dir}`;
-            document.getElementById("gusts").textContent = `${cur.gust_mph}mph ${cur.wind_dir}`;
-            document.getElementById("uv").textContent = `${cur.uv}%`;
-            document.getElementById("humidity").textContent = `${cur.humidity}%`;
-        })
-        .catch(error => {
+        try {
+            const response = await fetch(weatherUrl);
+            return await response.json();
+        } catch (error) {
             console.error("An error occurred:", error);
-            document.getElementById("report").textContent = "Unable to fetch weather data.";
-        });
+            throw new Error("Unable to fetch weather data.");
+        }
+    }
+};
+
+const GeoLocation = {
+    async getLocationFromCoords(latitude, longitude) {
+        const geocodingUrl = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`;
+
+        try {
+            const response = await fetch(geocodingUrl);
+            return await response.json();
+        } catch (error) {
+            console.error("An error occurred:", error);
+            throw new Error("Unable to fetch location");
+        }
+    }
 }
 
-function getLocation() {
+const UI = {
+    updateLocationInfo(latitude, longitude) {
+        GeoLocation.getLocationFromCoords(latitude, longitude)
+            .then(geoData => {
+                const location = geoData.address.city || geoData.address.town || geoData.address.village
+                document.getElementById("subHeader").textContent = location.toUpperCase();
+            })
+            .catch(error => UI.showError(error.message));
+    },
+    updateWeatherInfo(weather) {
+        const cur = weather.current;
+        const tempSetting = localStorage.getItem('tempurature') || 'f';
+
+        if (tempSetting === 'f') {
+            document.getElementById("temp").textContent = `${cur.temp_f}°`;
+            document.getElementById("feelsLike").textContent = `${cur.feelslike_f}°`;
+        }
+        else if (tempSetting === 'c') {
+            document.getElementById("temp").textContent = `${cur.temp_c}°`;
+            document.getElementById("feelsLike").textContent = `${cur.feelslike_c}°`;
+        }
+
+        document.getElementById("report").textContent = WeatherReporter.generateReport(weather);
+        document.getElementById("wind").textContent = `${cur.wind_mph}mph ${cur.wind_dir}`;
+        document.getElementById("gusts").textContent = `${cur.gust_mph}mph ${cur.wind_dir}`;
+        document.getElementById("uv").textContent = `${cur.uv}`;
+        document.getElementById("humidity").textContent = `${cur.humidity}%`;
+        document.getElementById("precipitation").textContent = `${cur.precip_in}" in last 24h`;
+    },
+    showError(message) {
+        document.getElementById("report").textContent = message;
+    }
+};
+
+const FortuneModule = {
+    //fortunes: [],
+    generateAndSetFortune() {
+        const randomIndex = Math.floor(Math.random() * fortunes.length);
+        const randomFortune = fortunes[randomIndex];
+        document.getElementById("fortuneText").textContent = randomFortune;
+    }
+};
+
+const DeepThoughtModule = {
+    //handeyQuotes: [],
+    generateAndSetDeepThought() {
+        const randomIndex = Math.floor(Math.random() * handeyQuotes.length);
+        const randomDeepThought = handeyQuotes[randomIndex];
+        document.getElementById("deepThoughtText").textContent = randomDeepThought;
+    }
+};
+
+window.onload = function () {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             position => {
                 const latitude = position.coords.latitude;
                 const longitude = position.coords.longitude;
 
-                fetchWeatherByLocation(latitude, longitude);
-                updateLocationInfo(`Lat: ${latitude}, Long: ${longitude}`);
+                WeatherApp.fetchWeather(latitude, longitude)
+                    .then(weatherData => {
+                        UI.updateLocationInfo(latitude, longitude);
+                        UI.updateWeatherInfo(weatherData);
+                    })
+                    .catch(error => UI.showError(error.message));
             },
             error => {
                 console.error("Geolocation error:", error);
-                document.getElementById("report").textContent = "Unable to fetch weather data.";
+                UI.showError("Unable to fetch weather data.");
             }
         );
     } else {
         console.error("Geolocation is not supported by this browser.");
-        document.getElementById("report").textContent = "Geolocation is not supported.";
+        UI.showError("Geolocation is not supported.");
+    }
+
+    FortuneModule.generateAndSetFortune();
+    DeepThoughtModule.generateAndSetDeepThought();
+
+    setTempuratureSetting(localStorage.getItem('tempurature'));
+};
+
+function showSidebar() {
+    document.getElementById('overlay').classList.toggle('active');
+    document.getElementById('sidebar').classList.toggle('active');
+}
+
+function hideSidebar() {
+    document.getElementById('overlay').classList.remove('active');
+    document.getElementById('sidebar').classList.remove('active');
+}
+
+function setTempuratureSetting(setting) {
+    localStorage.setItem('tempurature', setting);
+
+    if (setting === 'f') {
+        document.getElementById('selectionVisual').classList.add('first');
+        document.getElementById('selectionVisual').classList.remove('second');
+    } else if (setting === 'c') {
+        document.getElementById('selectionVisual').classList.add('second');
+        document.getElementById('selectionVisual').classList.remove('first');
+    }
+
+    // Silly, but we must update weather on click
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            position => {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+
+                WeatherApp.fetchWeather(latitude, longitude)
+                    .then(weatherData => {
+                        UI.updateLocationInfo(latitude, longitude);
+                        UI.updateWeatherInfo(weatherData);
+                    })
+                    .catch(error => UI.showError(error.message));
+            },
+            error => {
+                console.error("Geolocation error:", error);
+                UI.showError("Unable to fetch weather data.");
+            }
+        );
+    } else {
+        console.error("Geolocation is not supported by this browser.");
+        UI.showError("Geolocation is not supported.");
     }
 }
-
-function generateAndSetFortune() {
-    const randomIndex = Math.floor(Math.random() * fortunes.length);
-    const randomFortune = fortunes[randomIndex];
-    document.getElementById("fortuneText").textContent = randomFortune;
-}
-
-function generateAndSetDeepThought() {
-    const randomIndex = Math.floor(Math.random() * handeyQuotes.length);
-    const randomDeepThought = handeyQuotes[randomIndex];
-    document.getElementById("deepThoughtText").textContent = randomDeepThought;
-}
-
-window.onload = function () {
-    getLocation();
-    generateAndSetFortune();
-    generateAndSetDeepThought();
-};

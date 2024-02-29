@@ -6,58 +6,101 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/13bcc3175e.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="styles.css">
     <script src="main.js"></script>
 </head>
 <body>
     <div class="container">
+        <div id="overlay" onclick="hideSidebar()"></div>
+
+        <div id="sidebar">
+            <div class="toggleButton" onclick="showSidebar()">
+                <i class="fa-solid fa-bars"></i>
+            </div>
+
+            <div id="textToggle">
+                <p id="label">TEMPURATURE</p>
+                <div id="entries">
+                    <div id="selectionVisual"></div>
+                    <p id="fahrenheit" onclick="setTempuratureSetting('f')">Fahrenheit</p>
+                    <p id="celius" onclick="setTempuratureSetting('c')">Celius</p>
+                </div>
+            </div>
+
+            <!-- TODO: Add option for imperial/metric -->
+            <!--<div id="textToggle">
+                <p id="label">UNITS</p>
+                <div id="entries">
+                    <div id="selectionVisual"></div>
+                    <p id="imperial" onclick="setUnits('imperial')">Imperial</p>
+                    <p id="metric" onclick="setUnits('metric')">Metric</p>
+                </div>
+            </div>-->
+        </div>
+
         <div class="main">
-            <p>My Location</p>
-            <p id="location">Loading...</p>
-            <p id="temp">Loading...</p>
-            <p id="report">Loading...</p>
-            <p id="feelsLike">Loading...</p>
+            <div class="location">
+                <p id="header">My Location</p>
+                <p id="subHeader"><i class="fa-solid fa-spinner"></i></p>
+            </div>
+            <p id="temp"><i class="fa-solid fa-spinner"></i></p>
+            <p id="report"><i class="fa-solid fa-spinner"></i></p>
         </div>
 
         <div class="row">
             <div class="box">
-                <p id="header">FORTUNE</p>
-                <p id="fortuneText">Loading...</p>
-            </div>
-            <div class="box">
-                <p id="header">DEEP THOUGHT</p>
-                <p id="deepThoughtText">Loading...</p>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="box">
-                <p id="header">WIND</p>
-                <p id="wind">Loading...</p>
-            </div>
-            <div class="box">
-                <p id="header">GUSTS</p>
-                <p id="gusts">Loading...</p>
+                <p id="header"><i class="fa-solid fa-lightbulb"></i> FORTUNE</p>
+                <p id="fortuneText"><i class="fa-solid fa-spinner"></i></p>
             </div>
         </div>
 
         <div class="row">
             <div class="box">
-                <p id="header">UV INDEX</p>
-                <p id="uv">Loading...</p>
-            </div>
-            <div class="box">
-                <p id="header">HUMIDITY</p>
-                <p id="humidity">Loading...</p>
+                <p id="header"><i class="fa-solid fa-quote-left"></i> JACK HANDEY QUOTE</p>
+                <p id="deepThoughtText"><i class="fa-solid fa-spinner"></i></p>
             </div>
         </div>
+
+        <div class="row">
+            <div class="box">
+                <p id="header"><i class="fa-solid fa-wind"></i> WIND</p>
+                <p id="wind"><i class="fa-solid fa-spinner"></i></p>
+            </div>
+            <div class="box">
+                <p id="header"><i class="fa-solid fa-wind"></i> GUSTS</p>
+                <p id="gusts"><i class="fa-solid fa-spinner"></i></p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="box">
+                <p id="header"><i class="fa-solid fa-sun"></i> UV INDEX</p>
+                <p id="uv"><i class="fa-solid fa-spinner"></i></p>
+            </div>
+            <div class="box">
+                <p id="header"><i class="fa-solid fa-water"></i> HUMIDITY</p>
+                <p id="humidity"><i class="fa-solid fa-spinner"></i></p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="box">
+                <p id="header"><i class="fa-solid fa-temperature-three-quarters"></i> FEELS LIKE</p>
+                <p id="feelsLike"><i class="fa-solid fa-spinner"></i></p>
+            </div>
+            <div class="box">
+                <p id="header"><i class="fa-solid fa-droplet"></i> PRECIPITATION</p>
+                <p id="precipitation"><i class="fa-solid fa-spinner"></i></p>
+            </div>
+        </div>
+
     </div>
 
-    <footer class="footer">
-        <!--<p id="locationInfo">Detecting location...</p>-->
+    <!--<footer class="footer">
         <div id="githubLink">
             <a href="https://github.com/veasman/weather-report">View on GitHub</a>
         </div>
-    </footer>
+    </footer>-->
 </body>
 </html>
