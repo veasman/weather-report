@@ -243,9 +243,35 @@ const WeatherReporter = {
 };
 
 const WeatherApp = {
+    init() {
+        this.getInfo();
+    },
     apiKey: "1e69b7049ecd4b14974140515231108",
     apiUrl(latitude, longitude) {
         return `https://api.weatherapi.com/v1/current.json?key=${this.apiKey}&q=${latitude},${longitude}&aqi=no`;
+    },
+    getInfo() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+
+                    WeatherApp.fetchWeather(latitude, longitude)
+                        .then(weatherData => {
+                            UI.updateWeatherInfo(weatherData);
+                        })
+                        .catch(error => UI.showError(error.message));
+                },
+                error => {
+                    console.error("Geolocation error:", error);
+                    UI.showError("Unable to fetch weather data.");
+                }
+            );
+        } else {
+            console.error("Geolocation is not supported by this browser.");
+            UI.showError("Geolocation is not supported.");
+        }
     },
     async fetchWeather(latitude, longitude) {
         const weatherUrl = this.apiUrl(latitude, longitude);
@@ -260,52 +286,35 @@ const WeatherApp = {
     }
 };
 
-const GeoLocation = {
-    async getLocationFromCoords(latitude, longitude) {
-        const geocodingUrl = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`;
-
-        try {
-            const response = await fetch(geocodingUrl);
-            return await response.json();
-        } catch (error) {
-            console.error("An error occurred:", error);
-            throw new Error("Unable to fetch location");
-        }
-    }
-}
-
 const UI = {
-    updateLocationInfo(latitude, longitude) {
-        GeoLocation.getLocationFromCoords(latitude, longitude)
-            .then(geoData => {
-                const location = geoData.address.city || geoData.address.town || geoData.address.village
-                document.getElementById("subHeader").textContent = location.toUpperCase();
-            })
-            .catch(error => UI.showError(error.message));
-    },
     updateWeatherInfo(weather) {
         const cur = weather.current;
         const tempSetting = localStorage.getItem('tempurature');
-        if (tempSetting == null || tempSetting == undefined || tempSetting == "null") {
-            localStorage.setItem('tempurature', 'f');
-            tempSetting = 'f';
-        }
+        const unitSetting = localStorage.getItem('units');
 
-        if (tempSetting === 'f') {
+        if (tempSetting === 'fahrenheit') {
             document.getElementById("temp").textContent = `${cur.temp_f}°`;
             document.getElementById("feelsLike").textContent = `${cur.feelslike_f}°`;
         }
-        else if (tempSetting === 'c') {
+        else if (tempSetting === 'celcius') {
             document.getElementById("temp").textContent = `${cur.temp_c}°`;
             document.getElementById("feelsLike").textContent = `${cur.feelslike_c}°`;
         }
 
+        if (unitSetting === 'imperial') {
+            document.getElementById("wind").textContent = `${cur.wind_mph}mph ${cur.wind_dir}`;
+            document.getElementById("gusts").textContent = `${cur.gust_mph}mph ${cur.wind_dir}`;
+            document.getElementById("precipitation").textContent = `${cur.precip_in}" in last 24h`;
+        } else if (unitSetting === 'metric') {
+            document.getElementById("wind").textContent = `${cur.wind_kph}kph ${cur.wind_dir}`;
+            document.getElementById("gusts").textContent = `${cur.gust_kph}kph ${cur.wind_dir}`;
+            document.getElementById("precipitation").textContent = `${cur.precip_mm}mm in last 24h`;
+        }
+
+        document.getElementById("subHeader").textContent = weather.location.name.toUpperCase();
         document.getElementById("report").textContent = WeatherReporter.generateReport(weather);
-        document.getElementById("wind").textContent = `${cur.wind_mph}mph ${cur.wind_dir}`;
-        document.getElementById("gusts").textContent = `${cur.gust_mph}mph ${cur.wind_dir}`;
         document.getElementById("uv").textContent = `${cur.uv}`;
         document.getElementById("humidity").textContent = `${cur.humidity}%`;
-        document.getElementById("precipitation").textContent = `${cur.precip_in}" in last 24h`;
     },
     showError(message) {
         document.getElementById("report").textContent = message;
@@ -313,6 +322,9 @@ const UI = {
 };
 
 const FortuneModule = {
+    init() {
+        this.generateAndSetFortune();
+    },
     //fortunes: [],
     generateAndSetFortune() {
         const randomIndex = Math.floor(Math.random() * fortunes.length);
@@ -322,6 +334,9 @@ const FortuneModule = {
 };
 
 const DeepThoughtModule = {
+    init() {
+        this.generateAndSetDeepThought();
+    },
     //handeyQuotes: [],
     generateAndSetDeepThought() {
         const randomIndex = Math.floor(Math.random() * handeyQuotes.length);
@@ -330,78 +345,107 @@ const DeepThoughtModule = {
     }
 };
 
+const SidebarModule = {
+    init() {
+        this.createDefaultSettings();
+        this.createSwitchListeners();
+        this.createDropdownListeners();
+    },
+    createDefaultSettings() {
+        if (localStorage.getItem('tempurature') == null) {
+            localStorage.setItem('tempurature', 'fahrenheit');
+            document.getElementById('fahrenheit').classList.add('selected');
+        }
+
+        if (localStorage.getItem('units') == null) {
+            localStorage.setItem('units', 'imperial');
+            document.getElementById('imperial').classList.add('selected');
+        }
+
+        if (localStorage.getItem('theme') == null) {
+            localStorage.setItem('theme', 'rose-pine-dark');
+            document.getElementById('rose-pine-dark').classList.add('selected');
+        }
+    },
+    createSwitchListeners() {
+        const textSwitches = document.querySelectorAll('#textSwitch');
+
+        textSwitches.forEach(textSwitch => {
+            const label = textSwitch.querySelector('#label').textContent.toLowerCase();
+            const buttons = textSwitch.querySelectorAll('#entries > p');
+
+            buttons.forEach(button => {
+                const selectedButtonId = localStorage.getItem(label);
+                if (selectedButtonId && button.id === selectedButtonId) {
+                    button.classList.add('selected');
+                }
+
+                button.addEventListener('click', () => {
+                    buttons.forEach(btn => {
+                        if (btn !== button) {
+                            btn.classList.remove('selected');
+                        }
+                    });
+
+                    localStorage.setItem(label, button.id);
+                    button.classList.add('selected');
+                    WeatherApp.init();
+                });
+            });
+        });
+    },
+    createDropdownListeners() {
+        const dropdowns = document.querySelectorAll('.dropdown');
+
+        dropdowns.forEach(dropdown => {
+            const selectBtn = dropdown.querySelector('.select-btn');
+            const options = dropdown.querySelectorAll('.option');
+            const sBtnText = dropdown.querySelector('.dropdown-text');
+            const settingName = dropdown.querySelector('#label').textContent.toLowerCase();
+            const currentSetting = localStorage.getItem(settingName);
+            const selectedName = dropdown.querySelector('#' + currentSetting).querySelector('.option-text').textContent;
+
+            sBtnText.textContent = selectedName;
+
+            selectBtn.addEventListener('click', () => {
+                dropdown.classList.toggle('active');
+            });
+
+            options.forEach(option => {
+                if (option.id === currentSetting) {
+                    option.classList.add('selected');
+                }
+
+                option.addEventListener('click', () => {
+                    const selectedOption = option.querySelector('.option-text').textContent;
+                    sBtnText.innerText = selectedOption;
+                    localStorage.setItem(settingName, option.id);
+
+                    options.forEach(opt => {
+                        if (opt !== option) {
+                            opt.classList.remove('selected');
+                        }
+                    });
+
+                    option.classList.add('selected');
+                    dropdown.classList.remove('active');
+                });
+            });
+        });
+    },
+    toggle() {
+        document.getElementById('overlay').classList.toggle('active');
+        document.getElementById('sidebar').classList.toggle('active');
+    },
+    hide() {
+        document.getElementById('overlay').classList.remove('active');
+        document.getElementById('sidebar').classList.remove('active');
+    }
+}
+
 window.onload = function () {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            position => {
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
-
-                WeatherApp.fetchWeather(latitude, longitude)
-                    .then(weatherData => {
-                        UI.updateLocationInfo(latitude, longitude);
-                        UI.updateWeatherInfo(weatherData);
-                    })
-                    .catch(error => UI.showError(error.message));
-            },
-            error => {
-                console.error("Geolocation error:", error);
-                UI.showError("Unable to fetch weather data.");
-            }
-        );
-    } else {
-        console.error("Geolocation is not supported by this browser.");
-        UI.showError("Geolocation is not supported.");
-    }
-
-    FortuneModule.generateAndSetFortune();
-    DeepThoughtModule.generateAndSetDeepThought();
-
-    setTempuratureSetting(localStorage.getItem('tempurature'));
+    SidebarModule.init();
+    WeatherApp.init();
+    FortuneModule.init();
+    DeepThoughtModule.init();
 };
-
-function showSidebar() {
-    document.getElementById('overlay').classList.toggle('active');
-    document.getElementById('sidebar').classList.toggle('active');
-}
-
-function hideSidebar() {
-    document.getElementById('overlay').classList.remove('active');
-    document.getElementById('sidebar').classList.remove('active');
-}
-
-function setTempuratureSetting(setting) {
-    localStorage.setItem('tempurature', setting);
-
-    if (setting === 'f') {
-        document.getElementById('selectionVisual').classList.add('first');
-        document.getElementById('selectionVisual').classList.remove('second');
-    } else if (setting === 'c') {
-        document.getElementById('selectionVisual').classList.add('second');
-        document.getElementById('selectionVisual').classList.remove('first');
-    }
-
-    // Silly, but we must update weather on click
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            position => {
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
-
-                WeatherApp.fetchWeather(latitude, longitude)
-                    .then(weatherData => {
-                        UI.updateLocationInfo(latitude, longitude);
-                        UI.updateWeatherInfo(weatherData);
-                    })
-                    .catch(error => UI.showError(error.message));
-            },
-            error => {
-                console.error("Geolocation error:", error);
-                UI.showError("Unable to fetch weather data.");
-            }
-        );
-    } else {
-        console.error("Geolocation is not supported by this browser.");
-        UI.showError("Geolocation is not supported.");
-    }
-}

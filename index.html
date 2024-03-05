@@ -7,34 +7,70 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/13bcc3175e.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles/interactables.css">
+    <link rel="stylesheet" href="styles/styles.css">
     <script src="main.js"></script>
 </head>
 <body>
     <div class="container">
-        <div id="overlay" onclick="hideSidebar()"></div>
+        <div id="overlay" onclick="SidebarModule.hide()"></div>
 
         <div id="sidebar">
-            <div class="toggleButton" onclick="showSidebar()">
+            <div class="toggleButton" onclick="SidebarModule.toggle()">
                 <i class="fa-solid fa-bars"></i>
             </div>
 
-            <div id="textToggle">
+            <div id="textSwitch">
                 <p id="label">TEMPURATURE</p>
                 <div id="entries">
-                    <div id="selectionVisual"></div>
-                    <p id="fahrenheit" onclick="setTempuratureSetting('f')">Fahrenheit</p>
-                    <p id="celius" onclick="setTempuratureSetting('c')">Celius</p>
+                    <p id="fahrenheit">Fahrenheit</p>
+                    <p id="celcius">Celcius</p>
                 </div>
             </div>
-            <!-- TODO: Add option for imperial/metric -->
-            <!--<div id="textToggle">
+
+            <div id="textSwitch">
                 <p id="label">UNITS</p>
                 <div id="entries">
-                    <div id="selectionVisual"></div>
-                    <p id="imperial" onclick="setUnits('imperial')">Imperial</p>
-                    <p id="metric" onclick="setUnits('metric')">Metric</p>
+                    <p id="imperial">Imperial</p>
+                    <p id="metric">Metric</p>
                 </div>
+            </div>
+
+            <!--<div class="dropdown">
+                <p id="label">THEME</p>
+                <div class="select-btn">
+                    <span class="dropdown-text">Select your option</span>
+                    <i class="caret"></i>
+                </div>
+                <ul class="options">
+                    <li class="option" id="rose-pine-dark">
+                        <span class="circle-container">
+                            <span class="quadrant" style="--color1: #eb6f92;"></span>
+                            <span class="quadrant" style="--color2: #31748f;"></span>
+                            <span class="quadrant" style="--color3: #f6c177;"></span>
+                            <span class="quadrant" style="--color4: #9ccfd8;"></span>
+                        </span>
+                        <span class="option-text">Rose Pine Dark</span>
+                    </li>
+                    <li class="option" id="grubox-dark">
+                        <span class="circle-container">
+                            <div class="quadrant" style="--color1: #cc241d;"></div>
+                            <div class="quadrant" style="--color2: #98971a;"></div>
+                            <div class="quadrant" style="--color3: #d79921;"></div>
+                            <div class="quadrant" style="--color4: #458588;"></div>
+                        </span>
+                        <span class="option-text">Gruvbox Dark</span>
+                    </li>
+                    <li class="option" id="tokyo-night-dark">
+                        <span class="circle-container">
+                            <div class="quadrant" style="--color1: #f7768e;"></div>
+                            <div class="quadrant" style="--color2: #9ece6a;"></div>
+                            <div class="quadrant" style="--color3: #e0af68;"></div>
+                            <div class="quadrant" style="--color4: #2ac3de;"></div>
+                        </span>
+                        <span class="option-text">Tokyo Night Dark</span>
+                    </li>
+                </ul>
             </div>-->
         </div>
 
@@ -93,13 +129,12 @@
                 <p id="precipitation"><i class="fa-solid fa-spinner"></i></p>
             </div>
         </div>
-
     </div>
 
-    <!--<footer class="footer">
+    <footer class="footer">
         <div id="githubLink">
             <a href="https://github.com/veasman/weather-report">View on GitHub</a>
         </div>
-    </footer>-->
+    </footer>
 </body>
 </html>
