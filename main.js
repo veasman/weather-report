@@ -243,12 +243,9 @@ const WeatherReporter = {
 };
 
 const WeatherApp = {
+    apiKey: '1e69b7049ecd4b14974140515231108',
     init() {
         this.getInfo();
-    },
-    apiKey: "1e69b7049ecd4b14974140515231108",
-    apiUrl(latitude, longitude) {
-        return `https://api.weatherapi.com/v1/current.json?key=${this.apiKey}&q=${latitude},${longitude}&aqi=no`;
     },
     getInfo() {
         if (navigator.geolocation) {
@@ -274,7 +271,7 @@ const WeatherApp = {
         }
     },
     async fetchWeather(latitude, longitude) {
-        const weatherUrl = this.apiUrl(latitude, longitude);
+        const weatherUrl = `https://api.weatherapi.com/v1/current.json?key=${this.apiKey}&q=${latitude},${longitude}&aqi=no`;
 
         try {
             const response = await fetch(weatherUrl);
@@ -392,26 +389,29 @@ const DeepThoughtModule = {
 
 const SidebarModule = {
     init() {
+        this.selectDefaultSettings();
         this.createSwitchListeners();
         this.createDropdownListeners();
     },
     createDefaultSettings() {
         if (localStorage.getItem('tempurature') == null) {
             localStorage.setItem('tempurature', 'fahrenheit');
-            document.getElementById('fahrenheit').classList.add('selected');
         }
 
         if (localStorage.getItem('units') == null) {
             localStorage.setItem('units', 'imperial');
-            document.getElementById('imperial').classList.add('selected');
         }
 
         if (localStorage.getItem('theme') == null) {
             localStorage.setItem('theme', 'rose-pine-dark');
-            document.getElementById('rose-pine-dark').classList.add('selected');
         }
 
         UI.updateTheme(localStorage.getItem('theme'));
+    },
+    selectDefaultSettings() {
+        document.getElementById('rose-pine-dark')?.classList.add('selected');
+        document.getElementById('imperial')?.classList.add('selected');
+        document.getElementById('fahrenheit')?.classList.add('selected');
     },
     createSwitchListeners() {
         const textSwitches = document.querySelectorAll('#textSwitch');
