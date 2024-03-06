@@ -319,28 +319,45 @@ const UI = {
     updateTheme(theme) {
         const root = document.documentElement;
 
-        switch (theme) {
-            case 'rose-pine-dark': {
-                break;
+        const themes = {
+            'rose-pine-dark': {
+                '--base-color': '#191724',
+                '--surface-color': '#1f1d2e',
+                '--surface-color-rgb': '#1f1d2e',
+                '--overlay-color': '#26233a',
+                '--accent-color': '#eb6f92',
+                '--highlight-med-color': '#403d52',
+                '--highlight-high-color': '#524f67',
+                '--text-color': '#e0def4',
+                '--text-color-rgb': '224, 222, 244',
+            },
+            'gruvbox-dark': {
+                '--base-color': '#1b1b1b',
+                '--surface-color': '#282828',
+                '--overlay-color': '#32302f',
+                '--accent-color': '#7daea3',
+                '--highlight-med-color': '#45403d',
+                '--highlight-high-color': '#5a524c',
+                '--text-color': '#ddc7a1',
+                '--text-color-rgb': '221, 199, 161',
+            },
+            'tokyo-night': {
+                '--base-color': '#1f2335',
+                '--surface-color': '#24283b',
+                '--overlay-color': '#292e43',
+                '--accent-color': '#f7768e',
+                '--highlight-med-color': '#3b4261',
+                '--highlight-high-color': '#414868',
+                '--text-color': '#c0caf5',
+                '--text-color-rgb': '192, 202, 245',
             }
-            case 'gruvbox-dark': {
-                root.style.setProperty('--base-color', '#191724');
-                root.style.setProperty('--surface-color', '#1f1d2e');
-                root.style.setProperty('--overlay-color', '#26233a');
-                root.style.setProperty('--accent-color', '#eb6f92');
-                root.style.setProperty('--highlight-med-color', '#403d52');
-                root.style.setProperty('--highlight-high-color', '#524f67');
-                root.style.setProperty('--button-background-color', '#1f1d2e');
-                root.style.setProperty('--button-hover-color', 'rgba(110, 106, 134, 0.15)');
-                root.style.setProperty('--button-selected-color', 'rgba(110, 106, 134, 0.3)');
-                root.style.setProperty('--footer-background-color', '#191724');
-                root.style.setProperty('--text-color', '#e0def4');
-                root.style.setProperty('--text-hover-color', 'rgba(224, 222, 244, 0.75)');
-                root.style.setProperty('--text-inactive-color', 'rgba(224, 222, 244, 0.5)');
-                root.style.setProperty('--text-disabled-color', 'rgba(224, 222, 244, 0.25)');
-                break;
-            }
-            case 'tokyo-night': {
+        };
+
+        const selectedTheme = themes[theme];
+
+        if (selectedTheme) {
+            for (const [property, value] of Object.entries(selectedTheme)) {
+                root.style.setProperty(property, value);
             }
         }
     },
@@ -375,7 +392,6 @@ const DeepThoughtModule = {
 
 const SidebarModule = {
     init() {
-        this.createDefaultSettings();
         this.createSwitchListeners();
         this.createDropdownListeners();
     },
@@ -394,6 +410,8 @@ const SidebarModule = {
             localStorage.setItem('theme', 'rose-pine-dark');
             document.getElementById('rose-pine-dark').classList.add('selected');
         }
+
+        UI.updateTheme(localStorage.getItem('theme'));
     },
     createSwitchListeners() {
         const textSwitches = document.querySelectorAll('#textSwitch');
@@ -460,7 +478,7 @@ const SidebarModule = {
 
                     // TODO: find a better way to make this extensible
                     if (settingName === 'theme') {
-
+                        UI.updateTheme(option.id);
                     }
                 });
             });
@@ -475,6 +493,8 @@ const SidebarModule = {
         document.getElementById('sidebar').classList.remove('active');
     }
 }
+
+SidebarModule.createDefaultSettings();
 
 window.onload = function () {
     SidebarModule.init();
