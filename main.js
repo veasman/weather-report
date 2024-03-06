@@ -316,6 +316,34 @@ const UI = {
         document.getElementById("uv").textContent = `${cur.uv}`;
         document.getElementById("humidity").textContent = `${cur.humidity}%`;
     },
+    updateTheme(theme) {
+        const root = document.documentElement;
+
+        switch (theme) {
+            case 'rose-pine-dark': {
+                break;
+            }
+            case 'gruvbox-dark': {
+                root.style.setProperty('--base-color', '#191724');
+                root.style.setProperty('--surface-color', '#1f1d2e');
+                root.style.setProperty('--overlay-color', '#26233a');
+                root.style.setProperty('--accent-color', '#eb6f92');
+                root.style.setProperty('--highlight-med-color', '#403d52');
+                root.style.setProperty('--highlight-high-color', '#524f67');
+                root.style.setProperty('--button-background-color', '#1f1d2e');
+                root.style.setProperty('--button-hover-color', 'rgba(110, 106, 134, 0.15)');
+                root.style.setProperty('--button-selected-color', 'rgba(110, 106, 134, 0.3)');
+                root.style.setProperty('--footer-background-color', '#191724');
+                root.style.setProperty('--text-color', '#e0def4');
+                root.style.setProperty('--text-hover-color', 'rgba(224, 222, 244, 0.75)');
+                root.style.setProperty('--text-inactive-color', 'rgba(224, 222, 244, 0.5)');
+                root.style.setProperty('--text-disabled-color', 'rgba(224, 222, 244, 0.25)');
+                break;
+            }
+            case 'tokyo-night': {
+            }
+        }
+    },
     showError(message) {
         document.getElementById("report").textContent = message;
     }
@@ -429,6 +457,11 @@ const SidebarModule = {
 
                     option.classList.add('selected');
                     dropdown.classList.remove('active');
+
+                    // TODO: find a better way to make this extensible
+                    if (settingName === 'theme') {
+
+                    }
                 });
             });
         });

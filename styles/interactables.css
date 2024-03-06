@@ -45,7 +45,7 @@
 }
 
 #sidebar {
-    position: absolute;
+    position: fixed;
     left: -16vw;
     top: 0;
     z-index: 11;
@@ -86,7 +86,7 @@
 
 #overlay {
     background: rgba(0, 0, 0, 0);
-    position: absolute;
+    position: fixed;
     pointer-events: none;
     top: 0;
     left: 0;
@@ -190,7 +190,6 @@
     background: var(--surface-color);
     box-shadow: 0 .5rem 1rem rgba(0, 0, 0, 0.2);
     height: 0;
-    max-height: 10rem;
     overflow-y: clip;
     transition: all 0s;
 
@@ -234,14 +233,94 @@
     color: var(--text-hover-color);
 }*/
 
+.circle-container {
+    position: relative;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    border-radius: 50%;
+}
+
+.quadrant {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    border-radius: 50%;
+}
+
+.quadrant:nth-child(1) {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+    background-color: var(--color1);
+}
+
+.quadrant:nth-child(2) {
+    clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%);
+    background-color: var(--color2);
+}
+
+.quadrant:nth-child(3) {
+    clip-path: polygon(0% 50%, 100% 50%, 100% 100%, 0% 100%);
+    background-color: var(--color3);
+}
+
+.quadrant:nth-child(4) {
+    clip-path: polygon(50% 50%, 100% 50%, 100% 100%, 50% 100%);
+    background-color: var(--color4);
+}
+
 @media (pointer:none), (pointer:coarse) {
     #sidebar {
         left: calc(var(--sidebar-width-mobile) * -1);
         width: var(--sidebar-width-mobile);
-        font-size: 4rem;
+        font-size: 3rem;
+
+        div > #subLabel {
+            font-size: 2rem;
+        }
     }
 
     #sidebar .toggleButton {
         left: calc(var(--sidebar-width-mobile) + var(--padding));
+    }
+
+    #textSwitch {
+        #entries {
+            padding: 0.5rem;
+
+            p:not(:only-child):not(:last-child) {
+                margin-right: 0.5rem;
+            }
+        }
+    }
+
+    .dropdown .options {
+        .option:not(:only-child):not(:last-child) {
+            margin-bottom: 0.5rem;
+        }
+
+    }
+
+    .dropdown.active .options {
+        height: 16rem;
+        padding: 1rem;
+        transition: all var(--controls-animation-speed);
+    }
+
+    .select-btn i {
+        border-left: 0.75rem solid transparent;
+        border-right: 0.75rem solid transparent;
+        border-top: 1rem solid var(--text-color);
+        margin-right: 0.5rem;
+    }
+
+    .circle-container {
+        width: 4rem;
+        height: 4rem;
+    }
+
+    .quadrant {
+        width: 50%;
+        height: 50%;
     }
 }
