@@ -150,6 +150,10 @@ p {
         margin-bottom: calc(var(--padding) * 1.5);
     }
 
+    .row:last-child {
+        margin-bottom: calc(var(--outer-padding) * 3);
+    }
+
     .box {
         padding: calc(var(--inner-padding) * 2);
         font-size: 3rem;
@@ -167,7 +171,6 @@ p {
     .box:not(:only-child):not(:last-child) {
         margin-right: calc(var(--padding) * 1.5);
     }
-
 
     .footer {
         font-size: 2rem;
