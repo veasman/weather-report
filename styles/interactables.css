@@ -14,7 +14,6 @@
     --button-background-color: var(--surface-color);
     --button-hover-color: rgba(var(--text-color-rgb), 0.05);
     --button-selected-color: rgba(var(--text-color-rgb), 0.15);
-    --footer-background-color: #191724;
 
     /* Sizes */
     --scrollbar-width: 0.5rem;
@@ -191,7 +190,7 @@
     background: var(--surface-color);
     box-shadow: 0 .5rem 1rem rgba(0, 0, 0, 0.2);
     height: 0;
-    overflow-y: clip;
+    overflow-y: auto;
     transition: all 0s;
 
     .option:not(:only-child):not(:last-child) {

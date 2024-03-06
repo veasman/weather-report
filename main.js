@@ -320,13 +320,28 @@ const UI = {
             'rose-pine-dark': {
                 '--base-color': '#191724',
                 '--surface-color': '#1f1d2e',
-                '--surface-color-rgb': '#1f1d2e',
                 '--overlay-color': '#26233a',
-                '--accent-color': '#eb6f92',
+                '--accent-color': '#31748f',
                 '--highlight-med-color': '#403d52',
                 '--highlight-high-color': '#524f67',
                 '--text-color': '#e0def4',
                 '--text-color-rgb': '224, 222, 244',
+                '--cold-color': '#9ccfd8',
+                '--med-color': '#f6c177',
+                '--hot-color': '#eb6f92',
+            },
+            'rose-pine-light': {
+                '--base-color': '#faf4ed',
+                '--surface-color': '#fffaf3',
+                '--overlay-color': '#f2e9e1',
+                '--accent-color': '#56949f',
+                '--highlight-med-color': '#dfdad9',
+                '--highlight-high-color': '#cecadc',
+                '--text-color': '#575279',
+                '--text-color-rgb': '87, 82, 121',
+                '--cold-color': '#9ccfd8',
+                '--med-color': '#f6c177',
+                '--hot-color': '#eb6f92',
             },
             'gruvbox-dark': {
                 '--base-color': '#1b1b1b',
@@ -337,16 +352,22 @@ const UI = {
                 '--highlight-high-color': '#5a524c',
                 '--text-color': '#ddc7a1',
                 '--text-color-rgb': '221, 199, 161',
+                '--cold-color': '#7daea3',
+                '--med-color': '#d8a657',
+                '--hot-color': '#ea692',
             },
             'tokyo-night': {
                 '--base-color': '#1f2335',
                 '--surface-color': '#24283b',
                 '--overlay-color': '#292e43',
-                '--accent-color': '#f7768e',
+                '--accent-color': '#ff007c',
                 '--highlight-med-color': '#3b4261',
                 '--highlight-high-color': '#414868',
                 '--text-color': '#c0caf5',
                 '--text-color-rgb': '192, 202, 245',
+                '--cold-color': '#9ccfd8',
+                '--med-color': '#f6c177',
+                '--hot-color': '#eb6f92',
             }
         };
 
@@ -367,7 +388,6 @@ const FortuneModule = {
     init() {
         this.generateAndSetFortune();
     },
-    //fortunes: [],
     generateAndSetFortune() {
         const randomIndex = Math.floor(Math.random() * fortunes.length);
         const randomFortune = fortunes[randomIndex];
@@ -379,7 +399,6 @@ const DeepThoughtModule = {
     init() {
         this.generateAndSetDeepThought();
     },
-    //handeyQuotes: [],
     generateAndSetDeepThought() {
         const randomIndex = Math.floor(Math.random() * handeyQuotes.length);
         const randomDeepThought = handeyQuotes[randomIndex];
@@ -389,29 +408,28 @@ const DeepThoughtModule = {
 
 const SidebarModule = {
     init() {
-        this.selectDefaultSettings();
+        this.createDefaultSettings();
         this.createSwitchListeners();
         this.createDropdownListeners();
     },
     createDefaultSettings() {
         if (localStorage.getItem('tempurature') == null) {
             localStorage.setItem('tempurature', 'fahrenheit');
+            document.getElementById('fahrenheit')?.classList.add('selected');
         }
 
         if (localStorage.getItem('units') == null) {
             localStorage.setItem('units', 'imperial');
+            document.getElementById('imperial')?.classList.add('selected');
         }
-
+    },
+    initTheme() {
         if (localStorage.getItem('theme') == null) {
             localStorage.setItem('theme', 'rose-pine-dark');
+            document.getElementById('rose-pine-dark')?.classList.add('selected');
         }
 
         UI.updateTheme(localStorage.getItem('theme'));
-    },
-    selectDefaultSettings() {
-        document.getElementById('rose-pine-dark')?.classList.add('selected');
-        document.getElementById('imperial')?.classList.add('selected');
-        document.getElementById('fahrenheit')?.classList.add('selected');
     },
     createSwitchListeners() {
         const textSwitches = document.querySelectorAll('#textSwitch');
@@ -494,7 +512,7 @@ const SidebarModule = {
     }
 }
 
-SidebarModule.createDefaultSettings();
+SidebarModule.initTheme();
 
 window.onload = function () {
     SidebarModule.init();
