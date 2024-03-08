@@ -21,18 +21,18 @@
             </div>
 
             <div id="textSwitch">
-                <p id="label">TEMPURATURE</p>
-                <div id="entries">
-                    <p id="fahrenheit">Fahrenheit</p>
-                    <p id="celcius">Celcius</p>
-                </div>
-            </div>
-
-            <div id="textSwitch">
                 <p id="label">UNITS</p>
                 <div id="entries">
                     <p id="imperial">Imperial</p>
                     <p id="metric">Metric</p>
+                </div>
+            </div>
+
+            <div id="textSwitch">
+                <p id="label">TIME</p>
+                <div id="entries">
+                    <p id="12">12 Hour</p>
+                    <p id="24">24 Hour</p>
                 </div>
             </div>
 
@@ -84,6 +84,8 @@
             </div>
         </div>
 
+        <div id="header"></div>
+
         <div class="main">
             <div class="location">
                 <p id="header">My Location</p>
@@ -91,6 +93,7 @@
             </div>
             <p id="temp"><i class="fa-solid fa-spinner"></i></p>
             <p id="report"><i class="fa-solid fa-spinner"></i></p>
+            <p id="hiLow"><i class="fa-solid fa-spinner"></i></p>
         </div>
 
         <div class="row">
@@ -109,6 +112,121 @@
 
         <div class="row">
             <div class="box">
+                <p id="header"><i class="fa-solid fa-calendar-days"></i> 8-DAY FORECAST</p>
+
+                <div class="forecast-row" id="0">
+                    <div class="day">Today</div>
+                    <div class="condition-icon"><i class="fa-solid fa-sun"></i></div>
+                    <div class="tempInfo">
+                        <div class="low-temp">60°F</div>
+                        <div class="temp-bar">
+                            <div class="bar"></div>
+                            <div class="circle"></div>
+                        </div>
+                        <div class="high-temp">75°F</div>
+                    </div>
+                </div>
+
+                <div class="forecast-row" id="1">
+                    <div class="day">Today</div>
+                    <div class="condition-icon"><i class="fa-solid fa-sun"></i></div>
+                    <div class="tempInfo">
+                        <div class="low-temp">60°F</div>
+                        <div class="temp-bar">
+                            <div class="bar"></div>
+                        </div>
+                        <div class="high-temp">75°F</div>
+                    </div>
+                </div>
+
+                <div class="forecast-row" id="2">
+                    <div class="day">Today</div>
+                    <div class="condition-icon"><i class="fa-solid fa-sun"></i></div>
+                    <div class="tempInfo">
+                        <div class="low-temp">60°F</div>
+                        <div class="temp-bar">
+                            <div class="bar"></div>
+                        </div>
+                        <div class="high-temp">75°F</div>
+                    </div>
+                </div>
+
+                <div class="forecast-row" id="3">
+                    <div class="day">Today</div>
+                    <div class="condition-icon"><i class="fa-solid fa-sun"></i></div>
+                    <div class="tempInfo">
+                        <div class="low-temp">60°F</div>
+                        <div class="temp-bar">
+                            <div class="bar"></div>
+                        </div>
+                        <div class="high-temp">75°F</div>
+                    </div>
+                </div>
+
+                <div class="forecast-row" id="4">
+                    <div class="day">Today</div>
+                    <div class="condition-icon"><i class="fa-solid fa-sun"></i></div>
+                    <div class="tempInfo">
+                        <div class="low-temp">60°F</div>
+                        <div class="temp-bar">
+                            <div class="bar"></div>
+                        </div>
+                        <div class="high-temp">75°F</div>
+                    </div>
+                </div>
+
+                <div class="forecast-row" id="5">
+                    <div class="day">Today</div>
+                    <div class="condition-icon"><i class="fa-solid fa-sun"></i></div>
+                    <div class="tempInfo">
+                        <div class="low-temp">60°F</div>
+                        <div class="temp-bar">
+                            <div class="bar"></div>
+                        </div>
+                        <div class="high-temp">75°F</div>
+                    </div>
+                </div>
+
+                <div class="forecast-row" id="6">
+                    <div class="day">Today</div>
+                    <div class="condition-icon"><i class="fa-solid fa-sun"></i></div>
+                    <div class="tempInfo">
+                        <div class="low-temp">60°F</div>
+                        <div class="temp-bar">
+                            <div class="bar"></div>
+                        </div>
+                        <div class="high-temp">75°F</div>
+                    </div>
+                </div>
+
+                <div class="forecast-row" id="7">
+                    <div class="day">Today</div>
+                    <div class="condition-icon"><i class="fa-solid fa-sun"></i></div>
+                    <div class="tempInfo">
+                        <div class="low-temp">60°F</div>
+                        <div class="temp-bar">
+                            <div class="bar"></div>
+                        </div>
+                        <div class="high-temp">75°F</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="box">
+                <p id="header"><i class="fa-solid fa-sun"></i> UV INDEX</p>
+                <p id="uv"><i class="fa-solid fa-spinner"></i></p>
+            </div>
+            <div class="box">
+                <p id="header"><i class="fa-solid fa-circle-down"></i> SUNSET</p>
+                <p id="sunset"><i class="fa-solid fa-spinner"></i></p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="box">
                 <p id="header"><i class="fa-solid fa-wind"></i> WIND</p>
                 <p id="wind"><i class="fa-solid fa-spinner"></i></p>
             </div>
@@ -120,8 +238,8 @@
 
         <div class="row">
             <div class="box">
-                <p id="header"><i class="fa-solid fa-sun"></i> UV INDEX</p>
-                <p id="uv"><i class="fa-solid fa-spinner"></i></p>
+                <p id="header"><i class="fa-solid fa-eye"></i> VISIBILITY</p>
+                <p id="visibility"><i class="fa-solid fa-spinner"></i></p>
             </div>
             <div class="box">
                 <p id="header"><i class="fa-solid fa-water"></i> HUMIDITY</p>

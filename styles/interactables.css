@@ -14,6 +14,9 @@
     --button-background-color: var(--surface-color);
     --button-hover-color: rgba(var(--text-color-rgb), 0.05);
     --button-selected-color: rgba(var(--text-color-rgb), 0.15);
+    --cold-color: #9ccfd8;
+    --med-color: #f6c177;
+    --hot-color: #eb6f92;
 
     /* Sizes */
     --scrollbar-width: 0.5rem;

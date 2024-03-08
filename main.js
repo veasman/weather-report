@@ -178,34 +178,41 @@ const handeyQuotes = [
     "If you ever drop your keys into a river of molten lava, let 'em go, because, man, they're gone.",
     "Laurie got offended that I used the word \"puke.\" But to me, that's what her dinner tasted like.",
     "I think it should be a law that if you ever get sucked up into a tornado, whatever you can grab with your hands while you're swirling around up there, you get to keep.",
+    "I can picture in my mind a world without war, a world without hate. And I can picture us attacking that world, because they'd never expect it.",
+    "I think a good gift for the president would be a chocolate revolver. And since he's so busy, you'd probably have to run up to him and hand it to him.",
+    "It's funny that pirates were always going around searching for treasure, and they never realized that the real treasure was the fond memories they were creating.",
 ];
 
 const WeatherReporter = {
     generateReport(weatherData) {
         const current = weatherData.current;
-        const tempF = current.temp_f;
-        const humidity = current.humidity;
-        const windSpeedMph = current.wind_mph;
-        const precipMm = current.precip_mm;
-        const conditionText = current.condition.text;
+        let temp = current.temp;
+        let humidity = current.humidity;
+        let windSpeedMph = current.wind_speed;
+        let conditionText = current.weather[0]?.description.toLowerCase();
+
+        if (localStorage.getItem('units') === 'metric') {
+            temp = (temp * 1.8) + 32;
+            windSpeedMph = windSpeedMph / 1.60934;
+        }
 
         let report = "It's fucking";
 
-        if (tempF >= 82) {
+        if (temp >= 82) {
             report += " hot";
-            if (tempF >= 94) {
+            if (temp >= 94) {
                 report += " as hell";
             }
-        } else if (tempF > 75) {
+        } else if (temp > 75) {
             report += " warm";
-        } else if (tempF <= 32) {
+        } else if (temp <= 32) {
             report += " freezing";
-            if (tempF <= 18) {
+            if (temp <= 18) {
                 report += " as hell";
             }
-        } else if (tempF <= 50) {
+        } else if (temp <= 50) {
             report += " cold";
-        } else if (tempF <= 60) {
+        } else if (temp <= 60) {
             report += " chilly";
         } else {
             report += " nice";
@@ -219,31 +226,14 @@ const WeatherReporter = {
             report += " and windy";
         }
 
-        if (precipMm > 0) {
-            report += " and";
-
-            if (conditionText.includes("rain")) {
-                report += " rainy";
-            } else if (conditionText.includes("snow")) {
-                report += " snowy";
-            }
-
-            if (precipMm > .8) {
-                report += " as hell";
-            }
-        } else {
-            report += ` and ${conditionText.toLowerCase()}`;
-            if (conditionText.toLowerCase() === "mist") {
-                report += "y";
-            }
-        }
+        report += ` with a ${conditionText.toLowerCase()}`;
 
         return report;
     }
 };
 
 const WeatherApp = {
-    apiKey: '1e69b7049ecd4b14974140515231108',
+    apiKey: 'f714353f2fc9e7be02f926cc4fea8822',
     init() {
         this.getInfo();
     },
@@ -254,9 +244,15 @@ const WeatherApp = {
                     const latitude = position.coords.latitude;
                     const longitude = position.coords.longitude;
 
-                    WeatherApp.fetchWeather(latitude, longitude)
+                    this.fetchWeather(latitude, longitude)
                         .then(weatherData => {
                             UI.updateWeatherInfo(weatherData);
+                        })
+                        .catch(error => UI.showError(error.message));
+
+                    this.getCityFromCoordinates(latitude, longitude)
+                        .then(locationData => {
+                            UI.updateLocationInfo(locationData);
                         })
                         .catch(error => UI.showError(error.message));
                 },
@@ -270,8 +266,19 @@ const WeatherApp = {
             UI.showError("Geolocation is not supported.");
         }
     },
+    async getCityFromCoordinates(latitude, longitude) {
+        const geocodingUrl = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`;
+
+        try {
+            const response = await fetch(geocodingUrl);
+            return await response.json();
+        } catch (error) {
+            console.error("An error occurred:", error);
+            throw new Error("Unable to fetch location data.");
+        }
+    },
     async fetchWeather(latitude, longitude) {
-        const weatherUrl = `https://api.weatherapi.com/v1/current.json?key=${this.apiKey}&q=${latitude},${longitude}&aqi=no`;
+        const weatherUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${latitude}&lon=${longitude}&units=${localStorage.getItem('units')}&appid=${this.apiKey}`;
 
         try {
             const response = await fetch(weatherUrl);
@@ -284,34 +291,129 @@ const WeatherApp = {
 };
 
 const UI = {
-    updateWeatherInfo(weather) {
-        const cur = weather.current;
-        const tempSetting = localStorage.getItem('tempurature');
-        const unitSetting = localStorage.getItem('units');
+    updateWeatherInfo(weatherData) {
+        console.log(weatherData);
+        const cur = weatherData.current;
+        const today = weatherData.daily[0];
+        const speedUnit = (localStorage.getItem('units') === 'imperial') ? 'mph' : 'kph';
+        const distUnit = (localStorage.getItem('units') === 'imperial') ? 'mi' : 'km';
+        const precipUnit = (localStorage.getItem('units') === 'imperial') ? '"' : 'mm';
+        const windDir = Converter.degToCompass(cur.wind_deg);
+        let visibility = cur.visibility / 1000;
+        let precipitation = weatherData.minutely[0]?.precipitation;
 
-        if (tempSetting === 'fahrenheit') {
-            document.getElementById("temp").textContent = `${cur.temp_f}°`;
-            document.getElementById("feelsLike").textContent = `${cur.feelslike_f}°`;
-        }
-        else if (tempSetting === 'celcius') {
-            document.getElementById("temp").textContent = `${cur.temp_c}°`;
-            document.getElementById("feelsLike").textContent = `${cur.feelslike_c}°`;
-        }
-
-        if (unitSetting === 'imperial') {
-            document.getElementById("wind").textContent = `${cur.wind_mph}mph ${cur.wind_dir}`;
-            document.getElementById("gusts").textContent = `${cur.gust_mph}mph ${cur.wind_dir}`;
-            document.getElementById("precipitation").textContent = `${cur.precip_in}" in last 24h`;
-        } else if (unitSetting === 'metric') {
-            document.getElementById("wind").textContent = `${cur.wind_kph}kph ${cur.wind_dir}`;
-            document.getElementById("gusts").textContent = `${cur.gust_kph}kph ${cur.wind_dir}`;
-            document.getElementById("precipitation").textContent = `${cur.precip_mm}mm in last 24h`;
+        if (localStorage.getItem('units') === 'imperial') {
+            visibility = visibility * 0.62137;
+            precipitation = precipitation * 0.0393701;
         }
 
-        document.getElementById("subHeader").textContent = weather.location.name.toUpperCase();
-        document.getElementById("report").textContent = WeatherReporter.generateReport(weather);
-        document.getElementById("uv").textContent = `${cur.uv}`;
+        document.getElementById("temp").textContent = `${Math.trunc(cur.temp)}°`;
+        document.getElementById("report").textContent = WeatherReporter.generateReport(weatherData);
+        document.getElementById("hiLow").textContent = `H:${Math.trunc(today.temp.max)}° L:${Math.trunc(today.temp.min)}°`;
+
+        document.getElementById("wind").textContent = `${Math.trunc(cur.wind_speed)}${speedUnit} ${windDir}`;
+        document.getElementById("gusts").textContent = `${Math.trunc(weatherData.hourly[0].wind_gust)}${speedUnit} ${windDir}`;
+
+        document.getElementById("uv").textContent = `${Math.trunc(cur.uvi)}`;
+        document.getElementById("sunset").textContent = `${Converter.getStringFromTimestamp(cur.sunset)}`;
+        document.getElementById("visibility").textContent = `${cur.visibility}${distUnit}`;
         document.getElementById("humidity").textContent = `${cur.humidity}%`;
+        document.getElementById("feelsLike").textContent = `${Math.trunc(cur.feels_like)}°`;
+        document.getElementById("precipitation").textContent = `${precipitation}${precipUnit} in last 24h`;
+
+        this.updateDailyForecast(weatherData);
+    },
+    updateDailyForecast(weatherData) {
+        const forecastRows = document.querySelectorAll('.forecast-row');
+        let collectiveLow = Infinity;
+        let collectiveHigh = -Infinity;
+
+        for (let i = 0; i < weatherData.daily.length; i++) {
+            const todayWeather = weatherData.daily[i];
+            collectiveLow = Math.min(collectiveLow, Math.trunc(todayWeather.temp.min));
+            collectiveHigh = Math.max(collectiveHigh, Math.trunc(todayWeather.temp.max));
+        }
+
+        if (localStorage.getItem('units') === 'metric') {
+            collectiveLow = (collectiveLow * 1.8) + 32;
+            collectiveHigh = (collectiveHigh * 1.8) + 32;
+        }
+
+        for (let i = 0; i < forecastRows.length; i++) {
+            const dailyWeather = weatherData.daily[i];
+            let tempMin = Math.trunc(dailyWeather.temp.min);
+            let tempMax = Math.trunc(dailyWeather.temp.max);
+
+            if (localStorage.getItem('units') === 'metric') {
+                tempMin = (tempMin * 1.8) + 32;
+                tempMax = (tempMax * 1.8) + 32;
+            }
+
+            const row = forecastRows[i];
+            const elementDay = row.querySelector('.day');
+            const elementConditionIcon = row.querySelector('.condition-icon');
+            const elementLowTemp = row.querySelector('.low-temp');
+            const elementHighTemp = row.querySelector('.high-temp');
+            const elementTempBarColorBar = row.querySelector('.bar');
+
+            if (i > 0) {
+                let today = new Date();
+                today.setDate(today.getDate() + i);
+                let dayName = today.toLocaleDateString('en-US', { weekday: 'long' });
+                elementDay.textContent = dayName.substring(0, 3);
+            }
+
+            const lowBarOffset = ((tempMin - collectiveLow) / (collectiveHigh - collectiveLow)) * 100;
+            const highBarOffset = ((tempMax - collectiveHigh) / (collectiveHigh - collectiveLow)) * 100;
+            elementTempBarColorBar.style.marginLeft = `${lowBarOffset}%`;
+            elementTempBarColorBar.style.width = `calc(100% - ${lowBarOffset}% + ${highBarOffset}%)`;
+            elementLowTemp.textContent = `${Math.trunc(dailyWeather.temp.min)}°`;
+            elementHighTemp.textContent = `${Math.trunc(dailyWeather.temp.max)}°`;
+
+            const blueThreshold = 45;
+            const redThreshold = 65;
+            const blueWidth = ((blueThreshold - tempMin) / (tempMax - tempMin)) * 100;
+            const redWidth = ((tempMax - redThreshold) / (tempMax - tempMin)) * 100;
+
+            elementTempBarColorBar.style.background = `linear-gradient(90deg, var(--cold-color) ${blueWidth}%, var(--hot-color) ${100 - redWidth}%)`;
+
+            const conditionId = dailyWeather.weather[0]?.id;
+            if (conditionId < 300) {
+                elementConditionIcon.innerHTML = '<i class="fa-solid fa-poo-storm"></i>';
+            } else if (conditionId >= 300 && conditionId < 500) {
+                elementConditionIcon.innerHTML = '<i class="fa-solid fa-cloud-rain"></i>';
+            } else if (conditionId >= 500 && conditionId < 511) {
+                elementConditionIcon.innerHTML = '<i class="fa-solid fa-cloud-sun"></i>';
+            } else if (conditionId == 511) {
+                elementConditionIcon.innerHTML = '<i class="fa-solid fa-snowflake"></i>';
+            } else if (conditionId >= 512 && conditionId < 600) {
+                elementConditionIcon.innerHTML = '<i class="fa-solid fa-cloud-heavy-showers"></i>';
+            } else if (conditionId >= 600 && conditionId < 700) {
+                elementConditionIcon.innerHTML = '<i class="fa-solid fa-snowflake"></i>';
+            } else if (conditionId >= 700 && conditionId < 800) {
+                elementConditionIcon.innerHTML = '<i class="fa-solid fa-smog"></i>';
+            } else if (conditionId === 800) {
+                elementConditionIcon.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            } else if (conditionId == 801) {
+                elementConditionIcon.innerHTML = '<i class="fa-solid fa-cloud-sun"></i>';
+            } else if (conditionId == 802) {
+                elementConditionIcon.innerHTML = '<i class="fa-solid fa-cloud"></i>';
+            }
+
+            if (i === 0) {
+                const circle = row.querySelector('.circle');
+                let curTemp = weatherData.current.temp;
+                if (localStorage.getItem('units') === 'metric') {
+                    curTemp = (curTemp * 1.8) + 32;
+                }
+
+                const circleOffset = ((curTemp - collectiveLow) / (collectiveHigh - collectiveLow)) * 100;
+                circle.style.marginLeft = `calc(${circleOffset}% - 1rem)`;
+            }
+        }
+    },
+    updateLocationInfo(locationData) {
+        document.getElementById("subHeader").textContent = locationData?.address.town || locationData?.address.city;
     },
     updateTheme(theme) {
         const root = document.documentElement;
@@ -354,7 +456,7 @@ const UI = {
                 '--text-color-rgb': '221, 199, 161',
                 '--cold-color': '#7daea3',
                 '--med-color': '#d8a657',
-                '--hot-color': '#ea692',
+                '--hot-color': '#ea6962',
             },
             'tokyo-night': {
                 '--base-color': '#1f2335',
@@ -413,9 +515,9 @@ const SidebarModule = {
         this.createDropdownListeners();
     },
     createDefaultSettings() {
-        if (localStorage.getItem('tempurature') == null) {
-            localStorage.setItem('tempurature', 'fahrenheit');
-            document.getElementById('fahrenheit')?.classList.add('selected');
+        if (localStorage.getItem('time') == null) {
+            localStorage.setItem('time', '12');
+            document.getElementById('12')?.classList.add('selected');
         }
 
         if (localStorage.getItem('units') == null) {
@@ -509,6 +611,29 @@ const SidebarModule = {
     hide() {
         document.getElementById('overlay').classList.remove('active');
         document.getElementById('sidebar').classList.remove('active');
+    }
+}
+
+const Converter = {
+    getStringFromTimestamp(timestamp) {
+        let timeFormat = localStorage.getItem('time');
+        let date = new Date(timestamp * 1000);
+
+        let options = {};
+        if (timeFormat === '12') {
+            options = { hour12: true, hour: 'numeric', minute: '2-digit' };
+        } else if (timeFormat === '24') {
+            options = { hour12: false, hour: '2-digit', minute: '2-digit' };
+        }
+
+        let timeString = date.toLocaleTimeString('en-US', options);
+
+        return timeString;
+    },
+    degToCompass(degrees) {
+        const compassDirections = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+        const index = Math.round((degrees % 360) / 45);
+        return compassDirections[(index + 8) % 8];
     }
 }
 
